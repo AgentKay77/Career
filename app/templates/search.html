@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Search{% endblock %}
+{% block content %}
+<header class="page-head"><h1>Search</h1></header>
+
+<form class="filter-bar" method="get" action="{{ url_for('search.search') }}">
+  <input type="search" name="q" value="{{ q }}" placeholder="Search everything…" autofocus>
+  <button class="btn-solid" type="submit">Search</button>
+</form>
+
+{% if q %}
+  {% set total = results.companies|length + results.contacts|length + results.stories|length + results.actions|length + results.learning|length + results.vault|length %}
+  <p class="muted">{{ total }} result{{ '' if total == 1 else 's' }} for <code>{{ q }}</code></p>
+
+  {% if results.companies %}
+    <section class="card">
+      <h2>Companies</h2>
+      <ul class="line-list">
+        {% for r in results.companies %}
+          <li><a href="{{ url_for('companies.detail', cid=r.id) }}">{{ r.name }}</a> — <span class="snippet">{{ r.snip|safe }}</span></li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+
+  {% if results.contacts %}
+    <section class="card">
+      <h2>Contacts</h2>
+      <ul class="line-list">
+        {% for r in results.contacts %}
+          <li><a href="{{ url_for('contacts.detail', cid=r.id) }}">{{ r.name }}</a>
+            {% if r.role %}<span class="muted">— {{ r.role }}</span>{% endif %}
+            — <span class="snippet">{{ r.snip|safe }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+
+  {% if results.stories %}
+    <section class="card">
+      <h2>Stories</h2>
+      <ul class="line-list">
+        {% for r in results.stories %}
+          <li><a href="{{ url_for('stories.detail', sid=r.id) }}">{{ r.title }}</a>
+            <span class="pill pill-readiness-{{ r.readiness }}">{{ r.readiness }}</span>
+            — <span class="snippet">{{ r.snip|safe }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+
+  {% if results.actions %}
+    <section class="card">
+      <h2>Actions</h2>
+      <ul class="line-list">
+        {% for r in results.actions %}
+          <li><a href="{{ url_for('actions.edit', aid=r.id) }}">{{ r.title }}</a>
+            <span class="pill pill-status-{{ r.status }}">{{ r.status }}</span>
+            — <span class="snippet">{{ r.snip|safe }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+
+  {% if results.learning %}
+    <section class="card">
+      <h2>Learning</h2>
+      <ul class="line-list">
+        {% for r in results.learning %}
+          <li><a href="{{ url_for('learning.edit', lid=r.id) }}">{{ r.title }}</a>
+            {% if r.author %}<span class="muted">— {{ r.author }}</span>{% endif %}
+            — <span class="snippet">{{ r.snip|safe }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+
+  {% if results.vault %}
+    <section class="card">
+      <h2>Vault</h2>
+      <ul class="line-list">
+        {% for r in results.vault %}
+          <li><a href="{{ url_for('vault.render', filepath=r.url_path) }}">{{ r.rel }}</a> — <span class="snippet">{{ r.snippet }}</span></li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+{% endif %}
+{% endblock %}

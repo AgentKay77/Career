@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Quick Capture{% endblock %}
+{% block content %}
+<header class="page-head"><h1>Quick Capture</h1></header>
+
+<form method="post" class="form-grid card capture-form">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <label class="span-2">What is this?
+    <select name="type">
+      <option value="action">Action (todo)</option>
+      <option value="contact">Contact stub</option>
+      <option value="learning">Learning item</option>
+      <option value="story">Story stub</option>
+    </select>
+  </label>
+  <label class="span-2">Title<input name="title" required autofocus></label>
+  <label class="span-2">Notes<textarea name="notes" rows="6"></textarea></label>
+  <div class="form-actions span-2">
+    <button class="btn-solid" type="submit">Capture</button>
+  </div>
+</form>
+{% endblock %}

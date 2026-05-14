@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Contacts · Roundbreak Career{% endblock %}
+{% block content %}
+<header class="page-head">
+  <h1>Contacts</h1>
+  <div class="page-actions">
+    <a class="btn-solid" href="{{ url_for('.new') }}">+ New contact</a>
+  </div>
+</header>
+
+<form class="filter-bar" method="get" action="{{ url_for('.list_view') }}">
+  <input type="search" name="q" value="{{ q }}" placeholder="Search…">
+  <label class="checkline"><input type="checkbox" name="stale" value="1" {% if stale %}checked{% endif %}> No contact 60+ days</label>
+  <button class="btn-ghost" type="submit">Filter</button>
+</form>
+
+<div class="card">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Role</th>
+        <th>Company</th>
+        <th>Warmth</th>
+        <th>Last contact</th>
+        <th>Next follow-up</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+        {% include "partials/contact_row.html" %}
+      {% else %}
+        <tr><td colspan="6" class="muted">No contacts found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

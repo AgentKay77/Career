@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0A0A0B">
+  <title>{% block title %}Roundbreak Career{% endblock %}</title>
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+  <link rel="icon" href="{{ url_for('static', filename='icons/favicon.svg') }}" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/icon-192.png') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/styles/github-dark.min.css">
+  <script src="https://unpkg.com/htmx.org@2.0.3" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js" defer></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+          onload="renderMathInElement(document.body,{delimiters:[
+            {left:'$$',right:'$$',display:true},
+            {left:'$',right:'$',display:false},
+            {left:'\\\\[',right:'\\\\]',display:true},
+            {left:'\\\\(',right:'\\\\)',display:false}
+          ],throwOnError:false})"></script>
+  <script defer src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/highlight.min.js"
+          onload="document.querySelectorAll('pre code').forEach(b=>hljs.highlightElement(b))"></script>
+  <script defer src="{{ url_for('static', filename='js/app.js') }}"></script>
+</head>
+<body>
+{% if g.user %}
+<aside class="sidebar" aria-label="Primary navigation">
+  <div class="brand"><a href="{{ url_for('dashboard.index') }}">Roundbreak<br><span>Career</span></a></div>
+  <nav class="nav-list">
+    <a href="{{ url_for('dashboard.index') }}" class="{% if request.endpoint=='dashboard.index' %}active{% endif %}">Dashboard</a>
+    <a href="{{ url_for('companies.list_view') }}" class="{% if request.blueprint=='companies' %}active{% endif %}">Companies</a>
+    <a href="{{ url_for('contacts.list_view') }}" class="{% if request.blueprint=='contacts' %}active{% endif %}">Contacts</a>
+    <a href="{{ url_for('stories.list_view') }}" class="{% if request.blueprint=='stories' %}active{% endif %}">Stories</a>
+    <a href="{{ url_for('learning.list_view') }}" class="{% if request.blueprint=='learning' %}active{% endif %}">Learning</a>
+    <a href="{{ url_for('actions.board') }}" class="{% if request.blueprint=='actions' %}active{% endif %}">Actions</a>
+    <a href="{{ url_for('salary.list_view') }}" class="{% if request.blueprint=='salary' %}active{% endif %}">Salary</a>
+    <a href="{{ url_for('resume.list_view') }}" class="{% if request.blueprint=='resume' %}active{% endif %}">Resume</a>
+    <a href="{{ url_for('review.current') }}" class="{% if request.blueprint=='review' %}active{% endif %}">Review</a>
+    <a href="{{ url_for('vault.browse') }}" class="{% if request.blueprint=='vault' %}active{% endif %}">Vault</a>
+    <a href="{{ url_for('search.search') }}" class="{% if request.endpoint=='search.search' %}active{% endif %}">Search</a>
+    <a href="{{ url_for('capture.capture') }}" class="{% if request.endpoint=='capture.capture' %}active{% endif %}">Capture</a>
+  </nav>
+  <form class="sidebar-search" action="{{ url_for('search.search') }}" method="get" role="search">
+    <input type="search" name="q" placeholder="Search..." aria-label="Search" value="{{ request.args.get('q','') }}">
+  </form>
+  <div class="sidebar-foot">
+    <span class="user">{{ g.user.username }}</span>
+    <form method="post" action="{{ url_for('auth.logout') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="btn-ghost" type="submit">Log out</button>
+    </form>
+    <a class="muted-link" href="{{ url_for('backup.list_view') }}">Backups</a>
+  </div>
+</aside>
+
+<nav class="tabbar" aria-label="Mobile navigation">
+  <a href="{{ url_for('dashboard.index') }}" class="{% if request.endpoint=='dashboard.index' %}active{% endif %}">Home</a>
+  <a href="{{ url_for('actions.board') }}" class="{% if request.blueprint=='actions' %}active{% endif %}">Actions</a>
+  <a href="{{ url_for('capture.capture') }}" class="{% if request.endpoint=='capture.capture' %}active{% endif %}">Capture</a>
+  <a href="{{ url_for('search.search') }}" class="{% if request.endpoint=='search.search' %}active{% endif %}">Search</a>
+  <a href="{{ url_for('vault.browse') }}" class="{% if request.blueprint=='vault' %}active{% endif %}">Vault</a>
+</nav>
+{% endif %}
+
+<main class="content">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-wrap">
+        {% for category, msg in messages %}
+          <div class="flash flash-{{ category }}">{{ msg }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</main>
+
+<script>
+  if ('serviceWorker' in navigator && location.protocol === 'https:') {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('{{ url_for("static", filename="sw.js") }}').catch(()=>{});
+    });
+  }
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ row.title }} · Stories{% endblock %}
+{% block content %}
+<header class="page-head">
+  <div>
+    <a class="muted-link" href="{{ url_for('.list_view') }}">← Stories</a>
+    <h1>{{ row.title }}</h1>
+    <div class="head-meta">
+      <span class="pill pill-readiness-{{ row.readiness }}">{{ row.readiness }}</span>
+      {% if row.problem_domain %}<span class="muted">{{ row.problem_domain }}</span>{% endif %}
+      <span class="muted">practiced {{ row.times_practiced }}×</span>
+    </div>
+  </div>
+  <div class="page-actions">
+    <a class="btn-ghost" href="{{ url_for('.practice', sid=row.id) }}">Practice</a>
+    <a class="btn-ghost" href="{{ url_for('.edit', sid=row.id) }}">Edit</a>
+    <form method="post" action="{{ url_for('.delete', sid=row.id) }}" onsubmit="return confirm('Delete this story?')">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="btn-danger" type="submit">Delete</button>
+    </form>
+  </div>
+</header>
+
+<article class="card story-detail">
+  <h2>Situation</h2><div class="md-body">{{ row.situation|markdown }}</div>
+  <h2>Task</h2><div class="md-body">{{ row.task|markdown }}</div>
+  <h2>Action</h2><div class="md-body">{{ row.action|markdown }}</div>
+  <h2>Result</h2><div class="md-body">{{ row.result|markdown }}</div>
+  <h2 class="tech-heading">Technical deep-dive</h2>
+  <div class="md-body tech-body">{{ row.technical|markdown }}</div>
+  {% if row.keywords %}<p class="muted">Keywords: {{ row.keywords }}</p>{% endif %}
+</article>
+{% endblock %}

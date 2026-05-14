@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{% if row %}Edit{% else %}New{% endif %} contact{% endblock %}
+{% block content %}
+<header class="page-head"><h1>{% if row %}Edit {{ row.name }}{% else %}New contact{% endif %}</h1></header>
+
+<form method="post" class="form-grid">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <label>Name<input name="name" required value="{{ row.name if row else '' }}"></label>
+  <label>Role<input name="role" value="{{ row.role if row else '' }}"></label>
+  <label>Company
+    <select name="company_id">
+      <option value="">— none —</option>
+      {% for c in companies %}
+        <option value="{{ c.id }}" {% if row and row.company_id==c.id %}selected{% endif %}>{{ c.name }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>Warmth (1-5)
+    <select name="warmth">
+      <option value="">—</option>
+      {% for n in [1,2,3,4,5] %}
+        <option value="{{ n }}" {% if row and row.warmth==n %}selected{% endif %}>{{ n }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>LinkedIn URL<input type="url" name="linkedin_url" value="{{ row.linkedin_url if row else '' }}"></label>
+  <label>Email<input type="email" name="email" value="{{ row.email if row else '' }}"></label>
+  <label>Phone<input name="phone" value="{{ row.phone if row else '' }}"></label>
+  <label>Location<input name="location" value="{{ row.location if row else '' }}"></label>
+  <label class="span-2">How we met<input name="how_we_met" value="{{ row.how_we_met if row else '' }}"></label>
+  <label class="span-2">Tags (comma separated)<input name="tags" value="{{ row.tags if row else '' }}"></label>
+  <label>Last contact date<input type="date" name="last_contact_date" value="{{ row.last_contact_date if row else '' }}"></label>
+  <label>Next follow-up date<input type="date" name="next_followup_date" value="{{ row.next_followup_date if row else '' }}"></label>
+  <label class="span-2">Notes (markdown)<textarea name="notes" rows="10">{{ row.notes if row else '' }}</textarea></label>
+  <div class="form-actions span-2">
+    <button class="btn-solid" type="submit">{% if row %}Save{% else %}Create{% endif %}</button>
+    <a class="btn-ghost" href="{{ url_for('.list_view') }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

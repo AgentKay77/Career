@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Review history{% endblock %}
+{% block content %}
+<header class="page-head">
+  <h1>Review history</h1>
+  <div class="page-actions"><a class="btn-ghost" href="{{ url_for('.current') }}">Current</a></div>
+</header>
+
+{% if rows %}
+  {% for r in rows %}
+    <article class="card">
+      <header class="card-head">
+        <h2>{{ '%04d-%02d' % (r.year, r.month) }}</h2>
+        <a class="muted-link" href="{{ url_for('.current', year=r.year, month=r.month) }}">Open</a>
+      </header>
+      <div class="grid-2">
+        <div><h3>Wins</h3><div class="md-body">{{ r.wins|markdown }}</div></div>
+        <div><h3>Misses</h3><div class="md-body">{{ r.misses|markdown }}</div></div>
+        <div><h3>Lessons</h3><div class="md-body">{{ r.lessons|markdown }}</div></div>
+        <div><h3>Next month focus</h3><div class="md-body">{{ r.next_month_focus|markdown }}</div></div>
+      </div>
+      <p class="muted">
+        Books {{ r.books_completed_count }} · Actions {{ r.actions_completed_count }} ·
+        Contacts {{ r.contacts_added_count }} · Stories polished {{ r.stories_polished_count }}
+      </p>
+    </article>
+  {% endfor %}
+{% else %}
+  <p class="muted">No past reviews yet.</p>
+{% endif %}
+{% endblock %}

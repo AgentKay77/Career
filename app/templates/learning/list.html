@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Learning · Roundbreak Career{% endblock %}
+{% block content %}
+<header class="page-head">
+  <h1>Learning</h1>
+  <div class="page-actions">
+    <a class="btn-solid" href="{{ url_for('.new') }}">+ New item</a>
+  </div>
+</header>
+
+<form class="filter-bar" method="get" action="{{ url_for('.list_view') }}">
+  <input type="search" name="q" value="{{ q }}" placeholder="Search title/author/notes…">
+  <select name="type">
+    <option value="">All types</option>
+    {% for t in types %}<option value="{{ t }}" {% if type_filter==t %}selected{% endif %}>{{ t }}</option>{% endfor %}
+  </select>
+  <button class="btn-ghost" type="submit">Filter</button>
+</form>
+
+<section class="kanban-grid kanban-three">
+  <div class="kanban-col" data-status="queued">
+    <h2>Queued <span class="muted">({{ columns.queued|length }})</span></h2>
+    {% for row in columns.queued %}{% include "partials/learning_row.html" %}{% endfor %}
+  </div>
+  <div class="kanban-col" data-status="reading">
+    <h2>Reading <span class="muted">({{ columns.reading|length }})</span></h2>
+    {% for row in columns.reading %}{% include "partials/learning_row.html" %}{% endfor %}
+  </div>
+  <div class="kanban-col" data-status="done">
+    <h2>Done <span class="muted">({{ columns.done|length }})</span></h2>
+    {% for row in columns.done %}{% include "partials/learning_row.html" %}{% endfor %}
+  </div>
+</section>
+
+{% if columns.dropped %}
+  <details class="card">
+    <summary>Dropped ({{ columns.dropped|length }})</summary>
+    <div class="kanban-col">
+      {% for row in columns.dropped %}{% include "partials/learning_row.html" %}{% endfor %}
+    </div>
+  </details>
+{% endif %}
+{% endblock %}

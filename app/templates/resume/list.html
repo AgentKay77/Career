@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Resume versions · Roundbreak Career{% endblock %}
+{% block content %}
+<header class="page-head"><h1>Resume versions</h1></header>
+
+<form method="post" action="{{ url_for('.upload') }}" enctype="multipart/form-data" class="form-grid card">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <label>Name<input name="name" placeholder="Sustainment v1" required></label>
+  <label>Focus area<input name="focus_area" placeholder="E-6, EDSM, depot"></label>
+  <label class="span-2">File<input type="file" name="file" accept=".pdf,.docx,.doc,.odt,.md,.txt" required></label>
+  <label class="span-2">Notes<textarea name="notes" rows="3"></textarea></label>
+  <div class="form-actions span-2"><button class="btn-solid" type="submit">Upload</button></div>
+</form>
+
+<div class="card">
+  <table class="data-table">
+    <thead><tr><th>Name</th><th>Focus</th><th>Created</th><th>Current</th><th></th></tr></thead>
+    <tbody>
+      {% for r in rows %}
+        <tr>
+          <td>{{ r.name }}</td>
+          <td>{{ r.focus_area or '' }}</td>
+          <td>{{ r.date_created|fmt_date }}</td>
+          <td>{% if r.is_current %}<span class="pill pill-status-accepted">current</span>{% endif %}</td>
+          <td class="row-actions">
+            <a class="btn-ghost" href="{{ url_for('.download', rid=r.id) }}">Download</a>
+            <form method="post" action="{{ url_for('.mark_current', rid=r.id) }}" class="inline">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="btn-ghost" type="submit">Mark current</button>
+            </form>
+            <form method="post" action="{{ url_for('.delete', rid=r.id) }}" onsubmit="return confirm('Delete?')" class="inline">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="btn-danger" type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="5" class="muted">No resume versions uploaded.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

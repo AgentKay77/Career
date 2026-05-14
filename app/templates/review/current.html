@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Monthly review · {{ year }}-{{ '%02d' % month }}{% endblock %}
+{% block content %}
+<header class="page-head">
+  <h1>Review — {{ '%04d-%02d' % (year, month) }}</h1>
+  <div class="page-actions"><a class="btn-ghost" href="{{ url_for('.history') }}">History</a></div>
+</header>
+
+<section class="stat-grid">
+  <div class="stat-tile"><div class="stat-num">{{ counts.books_completed_count }}</div><div class="stat-lbl">Books completed</div></div>
+  <div class="stat-tile"><div class="stat-num">{{ counts.actions_completed_count }}</div><div class="stat-lbl">Actions completed</div></div>
+  <div class="stat-tile"><div class="stat-num">{{ counts.contacts_added_count }}</div><div class="stat-lbl">Contacts added</div></div>
+  <div class="stat-tile"><div class="stat-num">{{ counts.stories_polished_count }}</div><div class="stat-lbl">Stories polished</div></div>
+</section>
+
+<form method="post" action="{{ url_for('.save') }}" class="form-grid card">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="hidden" name="year" value="{{ year }}">
+  <input type="hidden" name="month" value="{{ month }}">
+
+  <label class="span-2">Wins<textarea name="wins" rows="5">{{ row.wins if row else '' }}</textarea></label>
+  <label class="span-2">Misses<textarea name="misses" rows="5">{{ row.misses if row else '' }}</textarea></label>
+  <label class="span-2">Lessons<textarea name="lessons" rows="5">{{ row.lessons if row else '' }}</textarea></label>
+  <label class="span-2">Next month focus<textarea name="next_month_focus" rows="5">{{ row.next_month_focus if row else '' }}</textarea></label>
+
+  <div class="form-actions span-2">
+    <button class="btn-solid" type="submit">Save review</button>
+  </div>
+</form>
+
+<form class="filter-bar" method="get" action="{{ url_for('.current') }}">
+  <input type="number" name="year" min="2024" max="2100" value="{{ year }}">
+  <input type="number" name="month" min="1" max="12" value="{{ month }}">
+  <button class="btn-ghost" type="submit">Load month</button>
+</form>
+{% endblock %}

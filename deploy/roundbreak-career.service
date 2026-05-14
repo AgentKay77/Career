@@ -1,0 +1,24 @@
+[Unit]
+Description=Roundbreak Career PWA
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=career
+Group=career
+WorkingDirectory=/opt/roundbreak-career
+EnvironmentFile=/opt/roundbreak-career/.env
+ExecStart=/opt/roundbreak-career/.venv/bin/gunicorn -c gunicorn_conf.py "app:create_app()"
+Restart=on-failure
+RestartSec=5
+
+# Hardening — career user has no shell, no home, no privileged escalation.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=read-only
+ReadWritePaths=/opt/roundbreak-career/instance /opt/roundbreak-career/backups
+
+[Install]
+WantedBy=multi-user.target

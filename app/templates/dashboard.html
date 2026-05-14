@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · Roundbreak Career{% endblock %}
+{% block content %}
+<header class="page-head">
+  <h1>Dashboard</h1>
+  <div class="page-actions">
+    <a class="btn-ghost" href="{{ url_for('capture.capture') }}">+ Quick Capture</a>
+    <a class="btn-ghost" href="{{ url_for('stories.random_practice') }}">Random Story Practice</a>
+  </div>
+</header>
+
+<section class="stat-grid">
+  {% include "partials/stat_tile.html" ignore missing with context %}
+  <div class="stat-tile"><div class="stat-num">{{ stats.companies }}</div><div class="stat-lbl">Companies</div></div>
+  <div class="stat-tile"><div class="stat-num">{{ stats.contacts }}</div><div class="stat-lbl">Contacts</div></div>
+  <div class="stat-tile"><div class="stat-num">{{ stats.stories_polished }}<span class="muted">/{{ stats.stories_total }}</span></div><div class="stat-lbl">Stories polished</div></div>
+  <div class="stat-tile"><div class="stat-num">{{ stats.actions_open }}</div><div class="stat-lbl">Open actions</div></div>
+  <div class="stat-tile"><div class="stat-num">{{ stats.books_done }}<span class="muted">/{{ stats.books_done + stats.books_queued }}</span></div><div class="stat-lbl">Books finished</div></div>
+</section>
+
+<section class="dash-grid">
+  <div class="card">
+    <header class="card-head">
+      <h2>This Week</h2>
+      <a class="muted-link" href="{{ url_for('actions.board') }}">All actions →</a>
+    </header>
+    {% if this_week %}
+      <ul class="line-list">
+        {% for a in this_week %}
+          <li class="line-row">
+            <a href="{{ url_for('actions.edit', aid=a.id) }}">
+              <span class="pill pill-pri-{{ a.priority }}">{{ a.priority }}</span>
+              <span class="line-title">{{ a.title }}</span>
+              <span class="pill pill-cat">{{ a.category }}</span>
+              {% if a.target_date %}<span class="muted">{{ a.target_date|fmt_date }}</span>{% endif %}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="muted">No actions due this week.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <header class="card-head">
+      <h2>Follow-ups Due</h2>
+      <a class="muted-link" href="{{ url_for('contacts.list_view') }}">All contacts →</a>
+    </header>
+    {% if followups %}
+      <ul class="line-list">
+        {% for c in followups %}
+          <li class="line-row">
+            <a href="{{ url_for('contacts.detail', cid=c.id) }}">
+              <span class="line-title">{{ c.name }}</span>
+              {% if c.company_name %}<span class="muted">{{ c.company_name }}</span>{% endif %}
+              <span class="muted">{{ c.next_followup_date|fmt_date }}</span>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="muted">No follow-ups within 14 days.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <header class="card-head">
+      <h2>Quiet 60+ Days</h2>
+    </header>
+    {% if stale %}
+      <ul class="line-list">
+        {% for c in stale %}
+          <li class="line-row">
+            <a href="{{ url_for('contacts.detail', cid=c.id) }}">
+              <span class="line-title">{{ c.name }}</span>
+              {% if c.company_name %}<span class="muted">{{ c.company_name }}</span>{% endif %}
+              <span class="muted">last: {{ c.last_contact_date|fmt_date }}</span>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="muted">No stale relationships.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

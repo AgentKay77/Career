@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{% if row %}Edit{% else %}New{% endif %} story{% endblock %}
+{% block content %}
+<header class="page-head"><h1>{% if row %}Edit story{% else %}New story{% endif %}</h1></header>
+
+<form method="post" class="form-grid">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <label class="span-2">Title<input name="title" required value="{{ row.title if row else '' }}"></label>
+  <label>Problem domain<input name="problem_domain" value="{{ row.problem_domain if row else '' }}"></label>
+  <label>Readiness
+    <select name="readiness">
+      {% for r in readiness_levels %}
+        <option value="{{ r }}" {% if row and row.readiness==r %}selected{% endif %}>{{ r }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label class="span-2">Keywords (comma separated)<input name="keywords" value="{{ row.keywords if row else '' }}"></label>
+
+  <label class="span-2">Situation (markdown)<textarea name="situation" rows="6">{{ row.situation if row else '' }}</textarea></label>
+  <label class="span-2">Task<textarea name="task" rows="4">{{ row.task if row else '' }}</textarea></label>
+  <label class="span-2">Action<textarea name="action" rows="8">{{ row.action if row else '' }}</textarea></label>
+  <label class="span-2">Result<textarea name="result" rows="4">{{ row.result if row else '' }}</textarea></label>
+  <label class="span-2">Technical deep-dive (markdown + KaTeX)<textarea name="technical" rows="14">{{ row.technical if row else '' }}</textarea></label>
+
+  <div class="form-actions span-2">
+    <button class="btn-solid" type="submit">{% if row %}Save{% else %}Create{% endif %}</button>
+    <a class="btn-ghost" href="{{ url_for('.list_view') }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

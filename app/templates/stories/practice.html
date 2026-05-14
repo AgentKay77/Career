@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Practice — {{ row.title }}{% endblock %}
+{% block content %}
+<header class="page-head">
+  <div>
+    <a class="muted-link" href="{{ url_for('.detail', sid=row.id) }}">← {{ row.title }}</a>
+    <h1>Practice</h1>
+  </div>
+</header>
+
+<article class="card practice-card" id="practice"
+         x-data="practiceController({{ row.id }})">
+  <h2>Situation</h2>
+  <div class="practice-block" :class="{revealed: revealed.includes('situation')}">
+    <button class="btn-ghost reveal" @click="reveal('situation')" x-show="!revealed.includes('situation')">Reveal</button>
+    <div class="md-body" x-show="revealed.includes('situation')">{{ row.situation|markdown }}</div>
+  </div>
+  <h2>Task</h2>
+  <div class="practice-block" :class="{revealed: revealed.includes('task')}">
+    <button class="btn-ghost reveal" @click="reveal('task')" x-show="!revealed.includes('task')">Reveal</button>
+    <div class="md-body" x-show="revealed.includes('task')">{{ row.task|markdown }}</div>
+  </div>
+  <h2>Action</h2>
+  <div class="practice-block" :class="{revealed: revealed.includes('action')}">
+    <button class="btn-ghost reveal" @click="reveal('action')" x-show="!revealed.includes('action')">Reveal</button>
+    <div class="md-body" x-show="revealed.includes('action')">{{ row.action|markdown }}</div>
+  </div>
+  <h2>Result</h2>
+  <div class="practice-block" :class="{revealed: revealed.includes('result')}">
+    <button class="btn-ghost reveal" @click="reveal('result')" x-show="!revealed.includes('result')">Reveal</button>
+    <div class="md-body" x-show="revealed.includes('result')">{{ row.result|markdown }}</div>
+  </div>
+  <h2 class="tech-heading">Technical deep-dive</h2>
+  <div class="practice-block" :class="{revealed: revealed.includes('technical')}">
+    <button class="btn-ghost reveal" @click="reveal('technical')" x-show="!revealed.includes('technical')">Reveal</button>
+    <div class="md-body tech-body" x-show="revealed.includes('technical')">{{ row.technical|markdown }}</div>
+  </div>
+  <div class="practice-foot">
+    <button class="btn-solid" @click="logPractice()" x-show="!logged">Mark practiced (+1)</button>
+    <span class="muted" x-show="logged">Logged.</span>
+    <a class="btn-ghost" href="{{ url_for('.random_practice') }}">Next random →</a>
+  </div>
+</article>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const CSRF_TOKEN = "{{ csrf_token() }}";
+</script>
+<script src="{{ url_for('static', filename='js/practice.js') }}"></script>
+{% endblock %}

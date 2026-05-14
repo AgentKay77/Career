@@ -1,0 +1,7 @@
+{# Generic stat tile partial. Pass `num` and `label`. #}
+{% if num is defined and label is defined %}
+<div class="stat-tile">
+  <div class="stat-num">{{ num }}</div>
+  <div class="stat-lbl">{{ label }}</div>
+</div>
+{% endif %}

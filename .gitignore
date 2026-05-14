@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Virtualenvs
+.venv/
+venv/
+env/
+
+# Environment
+.env
+.backup_token
+
+# Instance / runtime data
+instance/*
+!instance/.gitkeep
+backups/*
+!backups/.gitkeep
+
+# Tests
+.pytest_cache/
+.coverage
+htmlcov/
+.cache/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

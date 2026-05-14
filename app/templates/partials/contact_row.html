@@ -1,0 +1,8 @@
+<tr>
+  <td><a href="{{ url_for('contacts.detail', cid=row.id) }}">{{ row.name }}</a></td>
+  <td>{{ row.role or '' }}</td>
+  <td>{% if row.company_name %}{{ row.company_name }}{% endif %}</td>
+  <td>{% if row.warmth %}<span class="warmth warmth-{{ row.warmth }}">●●●●●</span>{% endif %}</td>
+  <td>{{ row.last_contact_date|fmt_date }}</td>
+  <td>{{ row.next_followup_date|fmt_date }}</td>
+</tr>
