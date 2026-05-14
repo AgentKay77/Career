@@ -1,0 +1,21 @@
+<article class="kanban-card kanban-pri-{{ row.priority }}" data-id="{{ row.id }}" data-status="{{ row.status }}" draggable="true">
+  <header>
+    <span class="pill pill-pri-{{ row.priority }}">{{ row.priority }}</span>
+    <span class="pill pill-cat">{{ row.category }}</span>
+    {% if row.target_date %}<span class="muted">{{ row.target_date|fmt_date }}</span>{% endif %}
+  </header>
+  <a class="kanban-title" href="{{ url_for('actions.edit', aid=row.id) }}">{{ row.title }}</a>
+  {% if row.description %}<div class="kanban-desc">{{ row.description|markdown }}</div>{% endif %}
+  <footer class="kanban-foot">
+    <form method="post" action="{{ url_for('actions.change_status', aid=row.id) }}"
+          hx-post="{{ url_for('actions.change_status', aid=row.id) }}"
+          hx-target="closest .kanban-card" hx-swap="outerHTML">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <select name="status" onchange="this.form.requestSubmit()">
+        {% for s in ['pending','in_progress','done','skipped'] %}
+          <option value="{{ s }}" {% if s==row.status %}selected{% endif %}>{{ s.replace('_',' ') }}</option>
+        {% endfor %}
+      </select>
+    </form>
+  </footer>
+</article>

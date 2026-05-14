@@ -1,0 +1,10 @@
+<tr>
+  <td>
+    <a href="{{ url_for('companies.detail', cid=row.id) }}">{{ row.name }}</a>
+    <span class="pill pill-pri-{{ row.priority }}">P{{ row.priority }}</span>
+  </td>
+  <td>{{ row.location or '' }}</td>
+  <td><span class="pill pill-cat">{{ row.type }}</span></td>
+  <td><span class="pill pill-status-{{ row.status }}">{{ row.status }}</span></td>
+  <td>{{ row.updated_at|fmt_date }}</td>
+</tr>

@@ -1,0 +1,7 @@
+<tr>
+  <td><a href="{{ url_for('stories.detail', sid=row.id) }}">{{ row.title }}</a></td>
+  <td><span class="pill pill-readiness-{{ row.readiness }}">{{ row.readiness }}</span></td>
+  <td>{{ row.problem_domain or '' }}</td>
+  <td class="num">{{ row.times_practiced }}</td>
+  <td>{{ row.last_practiced|fmt_date }}</td>
+</tr>

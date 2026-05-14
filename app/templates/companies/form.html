@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}{% if row %}Edit{% else %}New{% endif %} company{% endblock %}
+{% block content %}
+<header class="page-head">
+  <h1>{% if row %}Edit {{ row.name }}{% else %}New company{% endif %}</h1>
+</header>
+
+<form method="post" class="form-grid" x-data="{notes: $refs?.notes?.value || ''}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+  <label>Name<input name="name" required value="{{ row.name if row else '' }}"></label>
+  <label>Location<input name="location" value="{{ row.location if row else '' }}"></label>
+  <label>Website<input type="url" name="website" value="{{ row.website if row else '' }}"></label>
+
+  <label>Type
+    <select name="type">
+      {% for t in types %}
+        <option value="{{ t }}" {% if row and row.type==t %}selected{% endif %}>{{ t }}</option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <label>Priority
+    <select name="priority">
+      {% for p in [1,2,3] %}
+        <option value="{{ p }}" {% if row and row.priority==p %}selected{% endif %}>P{{ p }}</option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <label>Status
+    <select name="status">
+      {% for s in statuses %}
+        <option value="{{ s }}" {% if row and row.status==s %}selected{% endif %}>{{ s }}</option>
+      {% endfor %}
+    </select>
+  </label>
+
+  <label class="span-2">Notes (markdown)
+    <textarea name="notes" rows="14" x-ref="notes" x-model="notes">{{ row.notes if row else '' }}</textarea>
+  </label>
+  <div class="span-2 md-preview" x-html="document.createElement('div').textContent = notes ? '' : ''">
+    {# Server-side rendered on save. Live-preview kept minimal to avoid CDN deps. #}
+  </div>
+
+  <div class="form-actions span-2">
+    <button class="btn-solid" type="submit">{% if row %}Save{% else %}Create{% endif %}</button>
+    <a class="btn-ghost" href="{{ url_for('.list_view') }}">Cancel</a>
+  </div>
+</form>
+{% endblock %}

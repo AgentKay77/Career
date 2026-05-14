@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}{{ row.name }} · Companies{% endblock %}
+{% block content %}
+<header class="page-head">
+  <div>
+    <a class="muted-link" href="{{ url_for('.list_view') }}">← Companies</a>
+    <h1>{{ row.name }}</h1>
+    <div class="head-meta">
+      <span class="pill pill-pri-{{ row.priority }}">P{{ row.priority }}</span>
+      <span class="pill pill-cat">{{ row.type }}</span>
+      <span class="pill pill-status-{{ row.status }}">{{ row.status }}</span>
+      {% if row.location %}<span class="muted">{{ row.location }}</span>{% endif %}
+      {% if row.website %}<a class="muted-link" href="{{ row.website }}" target="_blank" rel="noopener">website ↗</a>{% endif %}
+    </div>
+  </div>
+  <div class="page-actions">
+    <a class="btn-ghost" href="{{ url_for('.edit', cid=row.id) }}">Edit</a>
+    <form method="post" action="{{ url_for('.delete', cid=row.id) }}" onsubmit="return confirm('Delete this company?')">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="btn-danger" type="submit">Delete</button>
+    </form>
+  </div>
+</header>
+
+<section class="grid-2">
+  <div class="card">
+    <h2>Notes</h2>
+    <div class="md-body">{{ row.notes|markdown }}</div>
+  </div>
+
+  <div class="card">
+    <h2>Contacts</h2>
+    {% if contacts %}
+      <ul class="line-list">
+        {% for c in contacts %}
+          <li><a href="{{ url_for('contacts.detail', cid=c.id) }}">{{ c.name }}</a>
+            {% if c.role %}<span class="muted">— {{ c.role }}</span>{% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}<p class="muted">No contacts at this company yet.</p>{% endif %}
+  </div>
+
+  <div class="card">
+    <h2>Openings</h2>
+    <form method="post" action="{{ url_for('.new_opening', cid=row.id) }}" class="inline-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="text" name="title" placeholder="Job title" required>
+      <input type="url" name="url" placeholder="https://...">
+      <input type="date" name="posted_date">
+      <input type="text" name="notes" placeholder="Notes">
+      <button class="btn-ghost" type="submit">Add</button>
+    </form>
+    {% if openings %}
+      <table class="data-table">
+        <thead><tr><th>Title</th><th>Found</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for o in openings %}
+            <tr>
+              <td>{% if o.url %}<a href="{{ o.url }}" target="_blank" rel="noopener">{{ o.title }}</a>{% else %}{{ o.title }}{% endif %}</td>
+              <td>{{ o.found_date|fmt_date }}</td>
+              <td>{{ o.status }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

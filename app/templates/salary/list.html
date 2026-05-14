@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Salary · Roundbreak Career{% endblock %}
+{% block content %}
+<header class="page-head">
+  <h1>Salary data</h1>
+  <div class="page-actions"><a class="btn-solid" href="{{ url_for('.new') }}">+ New data point</a></div>
+</header>
+
+<form class="filter-bar" method="get" action="{{ url_for('.list_view') }}">
+  <input type="search" name="company" placeholder="Company" value="{{ company }}">
+  <input type="search" name="role" placeholder="Role" value="{{ role }}">
+  <input type="search" name="location" placeholder="Location" value="{{ location }}">
+  <select name="source">
+    <option value="">Any source</option>
+    {% for s in sources %}<option value="{{ s }}" {% if source==s %}selected{% endif %}>{{ s }}</option>{% endfor %}
+  </select>
+  <select name="cleared">
+    <option value="">Any clearance</option>
+    <option value="1" {% if cleared=='1' %}selected{% endif %}>Cleared</option>
+    <option value="0" {% if cleared=='0' %}selected{% endif %}>Uncleared</option>
+  </select>
+  <button class="btn-ghost" type="submit">Filter</button>
+</form>
+
+<section class="stat-grid">
+  <div class="stat-tile"><div class="stat-num">{{ stats.base.count }}</div><div class="stat-lbl">Records</div></div>
+  <div class="stat-tile"><div class="stat-num">{{ stats.base.median|money }}</div><div class="stat-lbl">Base median</div></div>
+  <div class="stat-tile"><div class="stat-num">{{ stats.base.p25|money }} – {{ stats.base.p75|money }}</div><div class="stat-lbl">Base p25–p75</div></div>
+  <div class="stat-tile"><div class="stat-num">{{ stats.total.median|money }}</div><div class="stat-lbl">Total median</div></div>
+  <div class="stat-tile"><div class="stat-num">{{ stats.total.p25|money }} – {{ stats.total.p75|money }}</div><div class="stat-lbl">Total p25–p75</div></div>
+</section>
+
+<div class="card">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Year</th><th>Company</th><th>Role / Level</th><th>Location</th>
+        <th>Base</th><th>Bonus</th><th>Equity</th><th>Total</th><th>Source</th><th>Cleared</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}
+        <tr>
+          <td>{{ r.year or '' }}</td>
+          <td>{{ r.company or '' }}</td>
+          <td><a href="{{ url_for('.edit', sid=r.id) }}">{{ r.role or '' }}</a> {% if r.level %}<span class="muted">/ {{ r.level }}</span>{% endif %}</td>
+          <td>{{ r.location or '' }}</td>
+          <td class="num">{{ r.base_salary|money }}</td>
+          <td class="num">{% if r.bonus_amount %}{{ r.bonus_amount|money }}{% elif r.bonus_target_pct %}{{ r.bonus_target_pct }}%{% endif %}</td>
+          <td class="num">{{ r.equity_value|money }}</td>
+          <td class="num">{{ r.total_comp|money }}</td>
+          <td><span class="pill pill-cat">{{ r.source }}</span></td>
+          <td>{% if r.cleared %}✓{% endif %}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="10" class="muted">No salary data yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

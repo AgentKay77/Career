@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}{{ entry.basename }} · Vault{% endblock %}
+{% block content %}
+<header class="page-head">
+  <div>
+    <a class="muted-link" href="{{ url_for('vault.browse') }}">← Vault</a>
+    <h1>{{ entry.basename }}</h1>
+    <div class="head-meta"><span class="muted">{{ entry.rel }}</span></div>
+  </div>
+  <div class="page-actions">
+    <a class="btn-ghost" href="{{ obsidian_uri }}">Edit in Obsidian</a>
+  </div>
+</header>
+
+{% if meta %}
+  <div class="card frontmatter">
+    <h3>Frontmatter</h3>
+    <dl class="kv">
+      {% for k, v in meta.items() %}
+        <dt>{{ k }}</dt><dd>{{ v }}</dd>
+      {% endfor %}
+    </dl>
+  </div>
+{% endif %}
+
+<article class="card md-body">
+  {{ html }}
+</article>
+
+{% if backlinks %}
+  <section class="card">
+    <h2>Backlinks</h2>
+    <ul class="line-list">
+      {% for b in backlinks %}
+        <li><a href="{{ url_for('vault.render', filepath=b.url_path) }}">{{ b.basename }}</a>
+          <span class="muted">— {{ b.rel }}</span>
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
+{% endif %}
+{% endblock %}

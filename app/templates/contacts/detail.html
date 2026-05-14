@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}{{ row.name }} · Contacts{% endblock %}
+{% block content %}
+<header class="page-head">
+  <div>
+    <a class="muted-link" href="{{ url_for('.list_view') }}">← Contacts</a>
+    <h1>{{ row.name }}</h1>
+    <div class="head-meta">
+      {% if row.role %}<span class="muted">{{ row.role }}</span>{% endif %}
+      {% if row.company_name %}<span class="muted">@ {{ row.company_name }}</span>{% endif %}
+      {% if row.warmth %}<span class="warmth warmth-{{ row.warmth }}">●●●●●</span>{% endif %}
+    </div>
+  </div>
+  <div class="page-actions">
+    <a class="btn-ghost" href="{{ url_for('.edit', cid=row.id) }}">Edit</a>
+    <form method="post" action="{{ url_for('.delete', cid=row.id) }}" onsubmit="return confirm('Delete contact?')">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="btn-danger" type="submit">Delete</button>
+    </form>
+  </div>
+</header>
+
+<section class="grid-2">
+  <div class="card">
+    <h2>Notes</h2>
+    <div class="md-body">{{ row.notes|markdown }}</div>
+    <dl class="kv">
+      {% if row.linkedin_url %}<dt>LinkedIn</dt><dd><a href="{{ row.linkedin_url }}" target="_blank" rel="noopener">{{ row.linkedin_url }}</a></dd>{% endif %}
+      {% if row.email %}<dt>Email</dt><dd>{{ row.email }}</dd>{% endif %}
+      {% if row.phone %}<dt>Phone</dt><dd>{{ row.phone }}</dd>{% endif %}
+      {% if row.location %}<dt>Location</dt><dd>{{ row.location }}</dd>{% endif %}
+      {% if row.how_we_met %}<dt>How we met</dt><dd>{{ row.how_we_met }}</dd>{% endif %}
+      {% if row.tags %}<dt>Tags</dt><dd>{{ row.tags }}</dd>{% endif %}
+      <dt>Last contact</dt><dd>{{ row.last_contact_date|fmt_date }}</dd>
+      <dt>Next follow-up</dt><dd>{{ row.next_followup_date|fmt_date }}</dd>
+    </dl>
+  </div>
+
+  <div class="card">
+    <h2>Log interaction</h2>
+    <form method="post" action="{{ url_for('.add_interaction', cid=row.id) }}" class="form-grid">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label>Date<input type="date" name="date" value="{{ today().isoformat() }}"></label>
+      <label>Channel
+        <select name="channel">
+          {% for ch in channels %}<option value="{{ ch }}">{{ ch }}</option>{% endfor %}
+        </select>
+      </label>
+      <label class="span-2">Summary<textarea name="summary" rows="3"></textarea></label>
+      <label class="checkline"><input type="checkbox" name="follow_up_required" value="1"> Follow-up required</label>
+      <label>Follow-up by<input type="date" name="follow_up_by"></label>
+      <div class="form-actions span-2"><button class="btn-solid" type="submit">Log</button></div>
+    </form>
+
+    <h2>History</h2>
+    {% if history %}
+      <ul class="line-list">
+        {% for h in history %}
+          <li>
+            <strong>{{ h.date|fmt_date }}</strong>
+            <span class="pill pill-cat">{{ h.channel }}</span>
+            {% if h.follow_up_required %}<span class="pill pill-status-applied">follow-up: {{ h.follow_up_by|fmt_date }}</span>{% endif %}
+            <div class="md-body">{{ h.summary|markdown }}</div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}<p class="muted">No interactions logged.</p>{% endif %}
+  </div>
+</section>
+{% endblock %}

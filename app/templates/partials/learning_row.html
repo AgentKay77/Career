@@ -1,0 +1,27 @@
+<article class="kanban-card kanban-pri-{{ row.priority }}" data-id="{{ row.id }}" data-status="{{ row.status }}">
+  <header>
+    <span class="pill pill-cat">{{ row.type }}</span>
+    <span class="pill pill-pri-{{ row.priority }}">P{{ row.priority }}</span>
+    {% if row.rating %}<span class="muted">★ {{ row.rating }}</span>{% endif %}
+  </header>
+  <div class="kanban-title">
+    <a href="{{ url_for('learning.edit', lid=row.id) }}">{{ row.title }}</a>
+  </div>
+  {% if row.author %}<div class="muted">{{ row.author }}</div>{% endif %}
+  {% if row.notes_path %}
+    {# Obsidian deep link uses obsidian:// URI; basename match preserves Obsidian's behavior. #}
+    <div><a href="obsidian://open?file={{ row.notes_path|urlencode }}" target="_blank" rel="noopener">Open in Obsidian</a></div>
+  {% endif %}
+  <footer class="kanban-foot">
+    <form method="post" action="{{ url_for('learning.change_status', lid=row.id) }}"
+          hx-post="{{ url_for('learning.change_status', lid=row.id) }}"
+          hx-target="closest .kanban-card" hx-swap="outerHTML">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <select name="status" onchange="this.form.requestSubmit()">
+        {% for s in ['queued','reading','done','dropped'] %}
+          <option value="{{ s }}" {% if s==row.status %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+    </form>
+  </footer>
+</article>

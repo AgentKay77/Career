@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}{% if row %}Edit{% else %}New{% endif %} salary data{% endblock %}
+{% block content %}
+<header class="page-head"><h1>{% if row %}Edit salary data{% else %}New salary data{% endif %}</h1></header>
+
+<form method="post" class="form-grid">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <label>Source
+    <select name="source">{% for s in sources %}<option value="{{ s }}" {% if row and row.source==s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select>
+  </label>
+  <label>Year<input type="number" name="year" min="2000" max="2100" value="{{ row.year if row else '' }}"></label>
+  <label>Company<input name="company" value="{{ row.company if row else '' }}"></label>
+  <label>Role<input name="role" value="{{ row.role if row else '' }}"></label>
+  <label>Level<input name="level" value="{{ row.level if row else '' }}"></label>
+  <label>Location<input name="location" value="{{ row.location if row else '' }}"></label>
+  <label>Base salary<input type="number" step="any" name="base_salary" value="{{ row.base_salary if row else '' }}"></label>
+  <label>Bonus % target<input type="number" step="any" name="bonus_target_pct" value="{{ row.bonus_target_pct if row else '' }}"></label>
+  <label>Bonus $<input type="number" step="any" name="bonus_amount" value="{{ row.bonus_amount if row else '' }}"></label>
+  <label>Equity value<input type="number" step="any" name="equity_value" value="{{ row.equity_value if row else '' }}"></label>
+  <label>Total comp<input type="number" step="any" name="total_comp" value="{{ row.total_comp if row else '' }}"></label>
+  <label class="checkline"><input type="checkbox" name="cleared" value="1" {% if row and row.cleared %}checked{% endif %}> Cleared role</label>
+  <label>Date recorded<input type="date" name="date_recorded" value="{{ row.date_recorded if row else '' }}"></label>
+  <label class="span-2">Notes<textarea name="notes" rows="4">{{ row.notes if row else '' }}</textarea></label>
+
+  <div class="form-actions span-2">
+    <button class="btn-solid" type="submit">{% if row %}Save{% else %}Create{% endif %}</button>
+    <a class="btn-ghost" href="{{ url_for('.list_view') }}">Cancel</a>
+    {% if row %}
+      <form method="post" action="{{ url_for('.delete', sid=row.id) }}" onsubmit="return confirm('Delete?')" class="inline">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn-danger" type="submit">Delete</button>
+      </form>
+    {% endif %}
+  </div>
+</form>
+{% endblock %}

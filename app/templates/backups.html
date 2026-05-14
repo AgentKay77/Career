@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Backups{% endblock %}
+{% block content %}
+<header class="page-head"><h1>Backups</h1></header>
+
+<p class="muted">
+  Token-authenticated <code>POST /backup</code> runs nightly via cron. Token at
+  <code>/opt/roundbreak-career/.backup_token</code>. Restore overwrites the DB
+  after taking a pre-restore snapshot.
+</p>
+
+<div class="card">
+  <table class="data-table">
+    <thead><tr><th>File</th><th>Size</th><th>Modified</th><th></th></tr></thead>
+    <tbody>
+      {% for e in entries %}
+        <tr>
+          <td>{{ e.name }}</td>
+          <td class="num">{{ (e.size / 1024)|round(1) }} KB</td>
+          <td>{{ e.mtime }}</td>
+          <td class="row-actions">
+            <a class="btn-ghost" href="{{ url_for('backup.download', fname=e.name) }}">Download</a>
+            <form method="post" action="{{ url_for('backup.restore', fname=e.name) }}"
+                  onsubmit="return confirm('Restore overwrites the current DB after taking a snapshot. Continue?')"
+                  class="inline">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="btn-danger" type="submit">Restore</button>
+            </form>
+          </td>
+        </tr>
+      {% else %}
+        <tr><td colspan="4" class="muted">No backups yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

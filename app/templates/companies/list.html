@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Companies · Roundbreak Career{% endblock %}
+{% block content %}
+<header class="page-head">
+  <h1>Companies</h1>
+  <div class="page-actions">
+    <a class="btn-solid" href="{{ url_for('.new') }}">+ New company</a>
+  </div>
+</header>
+
+<form class="filter-bar" method="get" action="{{ url_for('.list_view') }}">
+  <input type="search" name="q" value="{{ q }}" placeholder="Search name/notes…">
+  <select name="status">
+    <option value="">All statuses</option>
+    {% for s in statuses %}<option value="{{ s }}" {% if status_filter==s %}selected{% endif %}>{{ s }}</option>{% endfor %}
+  </select>
+  <select name="type">
+    <option value="">All types</option>
+    {% for t in types %}<option value="{{ t }}" {% if type_filter==t %}selected{% endif %}>{{ t }}</option>{% endfor %}
+  </select>
+  <select name="sort">
+    {% for k, lbl in [('priority','Priority'),('name','Name'),('status','Status'),('type','Type'),('updated','Recently updated')] %}
+      <option value="{{ k }}" {% if sort==k %}selected{% endif %}>{{ lbl }}</option>
+    {% endfor %}
+  </select>
+  <button class="btn-ghost" type="submit">Filter</button>
+</form>
+
+<div class="card">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Location</th>
+        <th>Type</th>
+        <th>Status</th>
+        <th>Updated</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+        {% include "partials/company_card.html" %}
+      {% else %}
+        <tr><td colspan="5" class="muted">No results.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

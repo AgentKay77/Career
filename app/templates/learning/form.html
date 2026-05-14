@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}{% if row %}Edit{% else %}New{% endif %} learning item{% endblock %}
+{% block content %}
+<header class="page-head"><h1>{% if row %}Edit learning item{% else %}New learning item{% endif %}</h1></header>
+
+<form method="post" class="form-grid">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <label>Type
+    <select name="type">
+      {% for t in types %}<option value="{{ t }}" {% if row and row.type==t %}selected{% endif %}>{{ t }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>Status
+    <select name="status">
+      {% for s in statuses %}<option value="{{ s }}" {% if row and row.status==s %}selected{% endif %}>{{ s }}</option>{% endfor %}
+    </select>
+  </label>
+  <label class="span-2">Title<input name="title" required value="{{ row.title if row else '' }}"></label>
+  <label>Author<input name="author" value="{{ row.author if row else '' }}"></label>
+  <label>Source<input name="source" value="{{ row.source if row else '' }}"></label>
+  <label>Priority
+    <select name="priority">
+      {% for p in [1,2,3] %}
+        <option value="{{ p }}" {% if row and row.priority==p %}selected{% endif %}>P{{ p }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>Rating
+    <select name="rating">
+      <option value="">—</option>
+      {% for n in [1,2,3,4,5] %}<option value="{{ n }}" {% if row and row.rating==n %}selected{% endif %}>{{ n }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>Started<input type="date" name="date_started" value="{{ row.date_started if row else '' }}"></label>
+  <label>Completed<input type="date" name="date_completed" value="{{ row.date_completed if row else '' }}"></label>
+  <label class="span-2">Notes path (vault)<input name="notes_path" value="{{ row.notes_path if row else '' }}"></label>
+  <label class="span-2">Tags (comma separated)<input name="tags" value="{{ row.tags if row else '' }}"></label>
+  <label class="span-2">Key takeaways (markdown)<textarea name="key_takeaways" rows="10">{{ row.key_takeaways if row else '' }}</textarea></label>
+
+  <div class="form-actions span-2">
+    <button class="btn-solid" type="submit">{% if row %}Save{% else %}Create{% endif %}</button>
+    <a class="btn-ghost" href="{{ url_for('.list_view') }}">Cancel</a>
+    {% if row %}
+      <form method="post" action="{{ url_for('.delete', lid=row.id) }}" onsubmit="return confirm('Delete?')" class="inline">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn-danger" type="submit">Delete</button>
+      </form>
+    {% endif %}
+  </div>
+</form>
+{% endblock %}

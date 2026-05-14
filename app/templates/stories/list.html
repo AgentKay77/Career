@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Stories · Roundbreak Career{% endblock %}
+{% block content %}
+<header class="page-head">
+  <h1>Project stories</h1>
+  <div class="page-actions">
+    <a class="btn-ghost" href="{{ url_for('.random_practice') }}">Random practice</a>
+    <a class="btn-solid" href="{{ url_for('.new') }}">+ New story</a>
+  </div>
+</header>
+
+<form class="filter-bar" method="get" action="{{ url_for('.list_view') }}">
+  <input type="search" name="q" value="{{ q }}" placeholder="Search stories…">
+  <select name="readiness">
+    <option value="">All readiness</option>
+    {% for r in readiness_levels %}<option value="{{ r }}" {% if readiness==r %}selected{% endif %}>{{ r }}</option>{% endfor %}
+  </select>
+  <button class="btn-ghost" type="submit">Filter</button>
+</form>
+
+<div class="card">
+  <table class="data-table">
+    <thead>
+      <tr><th>Title</th><th>Readiness</th><th>Domain</th><th>Practiced</th><th>Last practiced</th></tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+        {% include "partials/story_card.html" %}
+      {% else %}
+        <tr><td colspan="5" class="muted">No stories yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

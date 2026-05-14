@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Actions · Roundbreak Career{% endblock %}
+{% block content %}
+<header class="page-head">
+  <h1>Actions</h1>
+  <div class="page-actions">
+    <a class="btn-ghost" href="{{ url_for('.calendar') }}">Calendar view</a>
+    <a class="btn-solid" href="{{ url_for('.new') }}">+ New action</a>
+  </div>
+</header>
+
+<form class="filter-bar quick-add" method="post" action="{{ url_for('.quick_add') }}"
+      hx-post="{{ url_for('.quick_add') }}" hx-target="#col-pending" hx-swap="afterbegin">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="text" name="title" placeholder="Quick add… (Enter)" required>
+  <select name="category">
+    {% for c in categories %}<option value="{{ c }}">{{ c }}</option>{% endfor %}
+  </select>
+  <select name="priority">
+    {% for p in priorities %}<option value="{{ p }}" {% if p=='medium' %}selected{% endif %}>{{ p }}</option>{% endfor %}
+  </select>
+  <button class="btn-solid" type="submit">Add</button>
+</form>
+
+<form class="filter-bar" method="get" action="{{ url_for('.board') }}">
+  <select name="category">
+    <option value="">All categories</option>
+    {% for c in categories %}<option value="{{ c }}" {% if category==c %}selected{% endif %}>{{ c }}</option>{% endfor %}
+  </select>
+  <button class="btn-ghost" type="submit">Filter</button>
+</form>
+
+{% if calendar_mode is defined and calendar_mode %}
+  <section class="calendar-grid">
+    {% for day in calendar_days %}
+      <div class="cal-day {% if day == today() %}cal-today{% endif %}">
+        <div class="cal-date">{{ day.strftime('%a %b %-d') }}</div>
+        {% set entries = by_day.get(day.isoformat(), []) %}
+        {% for a in entries %}
+          <div class="cal-item pill-pri-{{ a.priority }}">
+            <a href="{{ url_for('.edit', aid=a.id) }}">{{ a.title }}</a>
+          </div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </section>
+{% else %}
+  <section class="kanban-grid kanban-four" id="kanban">
+    <div class="kanban-col" data-status="pending" id="col-pending">
+      <h2>Pending <span class="muted">({{ columns.pending|length }})</span></h2>
+      {% for row in columns.pending %}{% include "partials/action_card.html" %}{% endfor %}
+    </div>
+    <div class="kanban-col" data-status="in_progress" id="col-in_progress">
+      <h2>In Progress <span class="muted">({{ columns.in_progress|length }})</span></h2>
+      {% for row in columns.in_progress %}{% include "partials/action_card.html" %}{% endfor %}
+    </div>
+    <div class="kanban-col" data-status="done" id="col-done">
+      <h2>Done <span class="muted">({{ columns.done|length }})</span></h2>
+      {% for row in columns.done %}{% include "partials/action_card.html" %}{% endfor %}
+    </div>
+    <div class="kanban-col" data-status="skipped" id="col-skipped">
+      <h2>Skipped <span class="muted">({{ columns.skipped|length }})</span></h2>
+      {% for row in columns.skipped %}{% include "partials/action_card.html" %}{% endfor %}
+    </div>
+  </section>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const CSRF_TOKEN = "{{ csrf_token() }}";
+  const CHANGE_STATUS_URL = (id) => `/actions/${id}/status`;
+</script>
+<script src="{{ url_for('static', filename='js/kanban.js') }}"></script>
+{% endblock %}

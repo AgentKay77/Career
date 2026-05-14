@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}{% if row %}Edit{% else %}New{% endif %} action{% endblock %}
+{% block content %}
+<header class="page-head"><h1>{% if row %}Edit action{% else %}New action{% endif %}</h1></header>
+<form method="post" class="form-grid">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <label class="span-2">Title<input name="title" required value="{{ row.title if row else '' }}"></label>
+  <label>Category
+    <select name="category">{% for c in categories %}<option value="{{ c }}" {% if row and row.category==c %}selected{% endif %}>{{ c }}</option>{% endfor %}</select>
+  </label>
+  <label>Priority
+    <select name="priority">{% for p in priorities %}<option value="{{ p }}" {% if (row and row.priority==p) or (not row and p=='medium') %}selected{% endif %}>{{ p }}</option>{% endfor %}</select>
+  </label>
+  <label>Status
+    <select name="status">{% for s in statuses %}<option value="{{ s }}" {% if row and row.status==s %}selected{% endif %}>{{ s.replace('_',' ') }}</option>{% endfor %}</select>
+  </label>
+  <label>Target date<input type="date" name="target_date" value="{{ row.target_date if row else '' }}"></label>
+  <label class="span-2">Description (markdown)<textarea name="description" rows="6">{{ row.description if row else '' }}</textarea></label>
+  <label class="span-2">Completion notes<textarea name="completion_notes" rows="4">{{ row.completion_notes if row else '' }}</textarea></label>
+  <div class="form-actions span-2">
+    <button class="btn-solid" type="submit">{% if row %}Save{% else %}Create{% endif %}</button>
+    <a class="btn-ghost" href="{{ url_for('.board') }}">Cancel</a>
+    {% if row %}
+      <form method="post" action="{{ url_for('.delete', aid=row.id) }}" onsubmit="return confirm('Delete?')" class="inline">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn-danger" type="submit">Delete</button>
+      </form>
+    {% endif %}
+  </div>
+</form>
+{% endblock %}
